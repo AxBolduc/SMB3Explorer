@@ -14,90 +14,102 @@ public enum SqlFile
 {
     [Description("DatabaseTables.sql")]
     DatabaseTables,
-    
+
     [Description("Franchises.sql")]
     Franchises,
-    
+
     [Description("FranchiseSeasons.sql")]
     FranchiseSeasons,
-    
+
     [Description("CareerStatsBatting.sql")]
     CareerStatsBatting,
-    
+
     [Description("CareerStatsPitching.sql")]
     CareerStatsPitching,
-    
+
     [Description("PlayoffCareerStatsBatting.sql")]
     PlayoffCareerStatsBatting,
-    
+
     [Description("PlayoffCareerStatsPitching.sql")]
     PlayoffCareerStatsPitching,
-    
+
     [Description("PlayoffStatsBatting.sql")]
     PlayoffStatsBatting,
-    
+
     [Description("PlayoffStatsPitching.sql")]
     PlayoffStatsPitching,
-    
+
     [Description("SeasonStatsBatting.sql")]
     SeasonStatsBatting,
-    
+
     [Description("SeasonStatsPitching.sql")]
     SeasonStatsPitching,
-    
+
     [Description("FranchiseSeasonStandings.sql")]
     FranchiseSeasonStandings,
-    
+
     [Description("FranchisePlayoffStandings.sql")]
     FranchisePlayoffStandings,
-    
+
     [Description("TopPerformersPitching.sql")]
     TopPerformersPitching,
-    
+
     [Description("TopPerformersPitchingPlayoffs.sql")]
     TopPerformersPitchingPlayoffs,
-    
+
     [Description("TopPerformersBatting.sql")]
     TopPerformersBatting,
-    
+
     [Description("TopPerformersBattingPlayoffs.sql")]
     TopPerformersBattingPlayoffs,
-    
+
     [Description("TopPerformersRookiesPitching.sql")]
     TopPerformersRookiesPitching,
-    
+
     [Description("TopPerformersRookiesBatting.sql")]
     TopPerformersRookiesBatting,
-    
+
     [Description("MostRecentSeasonPlayersSmb3.sql")]
     MostRecentSeasonPlayersSmb3,
-    
+
     [Description("MostRecentSeasonPlayersSmb4.sql")]
     MostRecentSeasonPlayersSmb4,
-    
+
     [Description("MostRecentSeasonTeams.sql")]
     MostRecentSeasonTeams,
-    
+
     [Description("SeasonAverageBatterStats.sql")]
     SeasonAverageBatterStats,
-    
+
     [Description("PlayoffsAverageBatterStats.sql")]
     PlayoffsAverageBatterStats,
 
     [Description("SeasonAveragePitcherStats.sql")]
     SeasonAveragePitcherStats,
-    
+
     [Description("PlayoffsAveragePitcherStats.sql")]
     PlayoffsAveragePitcherStats,
-    
+
     [Description("MostRecentSeasonSchedule.sql")]
     MostRecentSeasonSchedule,
-    
+
     [Description("MostRecentSeasonPlayoffSchedule.sql")]
     MostRecentSeasonPlayoffSchedule,
-    
+
     [Description("GetLeaguesForSmb4SaveGame.sql")]
     GetLeaguesForSmb4SaveGame,
+
+    [Description("GetRosterForTeamSmbEi.sql")]
+    GetRosterForTeamSmbEi,
+
+    [Description("GetTeamsForSmbEi.sql")]
+    GetTeamsForSmbEi,
+
+    [Description("GetTeamConfigurationsForTeamSmbEi.sql")]
+    GetTeamConfigurationsForTeamSmbEi,
+
+    [Description("UpdatePlayerInRosterSmbEi.sql")]
+    UpdatePlayerInRosterSmbEi
 }
 
 public static class SqlRunner
@@ -115,7 +127,7 @@ public static class SqlRunner
 
         using var stream = assembly.GetManifestResourceStream(resourceName);
         using var reader = new StreamReader(stream ?? throw new InvalidOperationException("Invalid resource name"));
-        
+
         var result = reader.ReadToEnd();
         return result;
     }

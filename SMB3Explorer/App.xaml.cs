@@ -8,6 +8,7 @@ using SMB3Explorer.ApplicationConfig;
 using SMB3Explorer.Services.ApplicationContext;
 using SMB3Explorer.Services.CsvWriterWrapper;
 using SMB3Explorer.Services.DataService;
+using SMB3Explorer.Services.DataService.SMBEI;
 using SMB3Explorer.Services.HttpService;
 using SMB3Explorer.Services.NavigationService;
 using SMB3Explorer.Services.SystemIoWrapper;
@@ -52,6 +53,7 @@ public partial class App
         services.AddSingleton<IApplicationContext, ApplicationContext>();
         services.AddSingleton<ISystemIoWrapper, SystemIoWrapper>();
         services.AddSingleton<IApplicationConfig, ApplicationConfig.ApplicationConfig>();
+        services.AddSingleton<ISmbEiDataService, SmbEiDataService>();
 
         services.AddSingleton<MainWindow>(serviceProvider => new MainWindow
         {
@@ -61,6 +63,7 @@ public partial class App
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<LandingViewModel>();
         services.AddTransient<HomeViewModel>();
+        services.AddTransient<RosterViewModel>();
         services.AddTransient<ICsvWriterWrapper, CsvWriterWrapper>();
 
         // NavigationService calls this Func to get the ViewModel instance

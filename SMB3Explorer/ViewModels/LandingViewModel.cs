@@ -15,6 +15,7 @@ using SMB3Explorer.Enums;
 using SMB3Explorer.Models.Internal;
 using SMB3Explorer.Services.ApplicationContext;
 using SMB3Explorer.Services.DataService;
+using SMB3Explorer.Services.DataService.SMBEI;
 using SMB3Explorer.Services.NavigationService;
 using SMB3Explorer.Services.SystemIoWrapper;
 using SMB3Explorer.Utils;
@@ -27,19 +28,21 @@ public partial class LandingViewModel : ViewModelBase
     private readonly IApplicationConfig _applicationConfig;
     private readonly IApplicationContext _applicationContext;
     private readonly IDataService _dataService;
+    private readonly ISmbEiDataService _smbEiDataService;
     private readonly INavigationService _navigationService;
     private readonly ISystemIoWrapper _systemIoWrapper;
     private Smb4LeagueSelection? _selectedExistingLeague;
     private SelectedGame _selectedGame;
 
     public LandingViewModel(IDataService dataService, INavigationService navigationService,
-        ISystemIoWrapper systemIoWrapper, IApplicationContext applicationContext, IApplicationConfig applicationConfig)
+        ISystemIoWrapper systemIoWrapper, IApplicationContext applicationContext, IApplicationConfig applicationConfig, ISmbEiDataService smbEiDataService)
     {
         _navigationService = navigationService;
         _systemIoWrapper = systemIoWrapper;
         _applicationContext = applicationContext;
         _applicationConfig = applicationConfig;
         _dataService = dataService;
+        _smbEiDataService = smbEiDataService;
 
         Log.Information("Initializing LandingViewModel");
 
@@ -90,6 +93,7 @@ public partial class LandingViewModel : ViewModelBase
 
             OnPropertyChanged(nameof(Smb3ButtonVisibility));
             OnPropertyChanged(nameof(Smb4ButtonVisibility));
+            OnPropertyChanged(nameof(OrTextVisibility));
         }
     }
 
@@ -98,6 +102,9 @@ public partial class LandingViewModel : ViewModelBase
 
     public Visibility Smb4ButtonVisibility =>
         SelectedGame is SelectedGame.Smb4 ? Visibility.Visible : Visibility.Collapsed;
+
+    public Visibility OrTextVisibility =>
+        (SelectedGame is SelectedGame.Smb3 || SelectedGame is SelectedGame.Smb4) ? Visibility.Visible : Visibility.Collapsed;
 
     public Smb4LeagueSelection? SelectedExistingLeague
     {
@@ -196,6 +203,8 @@ public partial class LandingViewModel : ViewModelBase
 
         var directoryPath = _applicationContext.SelectedGame switch
         {
+            SelectedGame.SmbEI => BaseGameSmbEIDirectoryPath,
+            SelectedGame.Smb2 => BaseGameSmb3DirectoryPath,
             SelectedGame.Smb3 => BaseGameSmb3DirectoryPath,
             SelectedGame.Smb4 => BaseGameSmb4DirectoryPath,
             _ => throw new ArgumentOutOfRangeException(nameof(_applicationContext.SelectedGame),
@@ -239,15 +248,29 @@ public partial class LandingViewModel : ViewModelBase
     {
         if (connectionResult.TryPickT1(out _, out _)) return;
 
-        MessageBox.Show("Successfully connected to SMB3 database at " +
-                        $"{Environment.NewLine}{_dataService.CurrentFilePath}");
-        _navigationService.NavigateTo<HomeViewModel>();
+        if(_applicationContext.SelectedGame.Equals(SelectedGame.SmbEI))
+        {
+            _navigationService.NavigateTo<RosterViewModel>();
+        }
+        else
+        {
+            _navigationService.NavigateTo<HomeViewModel>();
+        }
     }
 
     private async Task<OneOf<Success, Error>> EstablishDbConnection(string filePath, bool isCompressedSaveGame = true)
     {
         var hasError = false;
-        var connectionResult = await _dataService.EstablishDbConnection(filePath, isCompressedSaveGame);
+
+        var connectionResult =  _applicationContext.SelectedGame switch
+        {
+            SelectedGame.SmbEI => await _smbEiDataService.EstablishDbConnection(filePath),
+            SelectedGame.Smb2 => await _dataService.EstablishDbConnection(filePath, isCompressedSaveGame),
+            SelectedGame.Smb3 => await _dataService.EstablishDbConnection(filePath, isCompressedSaveGame),
+            SelectedGame.Smb4 => await _dataService.EstablishDbConnection(filePath, isCompressedSaveGame),
+            _ => throw new ArgumentOutOfRangeException(nameof(_applicationContext.SelectedGame),
+                _applicationContext.SelectedGame, null)
+        };
 
         if (connectionResult.TryPickT1(out var error, out var leaguesInConnection))
         {
@@ -315,11 +338,11 @@ public partial class LandingViewModel : ViewModelBase
                         Log.Error("Failed to parse GUID from file name {FileName}. " +
                                   "This occurs when we are attempting to cache the SMB4 league in the " +
                                   "config for later on", smb4LeagueFileName);
-                        
+
                         Application.Current.Dispatcher.Invoke(() => Mouse.OverrideCursor = Cursors.Arrow);
                         return new Error();
                     }
-                    
+
                     var existingLeagueCached = existingLeagues
                         .FirstOrDefault(x => x.SaveGameLeagueId == smb4LeagueId);
                     var existingLeagueFromQuery = leaguesInConnection
@@ -329,7 +352,7 @@ public partial class LandingViewModel : ViewModelBase
                     {
                         existingLeagueCached.NumTimesAccessed++;
                         existingLeagueCached.LastAccessed = DateTime.Now;
-                        
+
                         configOptions.Leagues.RemoveAll(x => x.Id == smb4LeagueId);
                         configOptions.Leagues.Add(new League
                         {

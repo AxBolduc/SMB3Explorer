@@ -8,7 +8,11 @@ namespace SMB3Explorer.Services.ApplicationContext;
 public interface IApplicationContext
 {
     FranchiseSelection? SelectedFranchise { get; set; }
+    TeamSelection? SelectedTeam { get; set; }
+    TeamConfigurationSelection? SelectedTeamConfiguration { get; set; }
+    Roster? CurrentRoster { get; set; }
     bool IsFranchiseSelected { get; }
+    bool IsTeamSelected { get; }
     ConcurrentBag<FranchiseSeason> FranchiseSeasons { get; }
     FranchiseSeason? MostRecentFranchiseSeason { get; set; }
     bool FranchiseSeasonsLoading { get; set; }

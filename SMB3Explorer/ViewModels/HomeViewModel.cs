@@ -64,7 +64,7 @@ public partial class HomeViewModel : ViewModelBase
         private set => SetField(ref _franchises, value);
     }
 
-    public bool InteractionEnabled
+   public bool InteractionEnabled
     {
         get => _interactionEnabled;
         set => SetField(ref _interactionEnabled, value);

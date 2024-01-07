@@ -50,8 +50,12 @@
 
     <ItemGroup>
       <None Remove="Resources\Sql\CareerStatsBatting.sql" />
+      <None Remove="Resources\Sql\GetRosterForTeamSmbEi.sql" />
+      <None Remove="Resources\Sql\GetTeamsForSmbEi.sql" />
       <EmbeddedResource Include="Resources\Sql\CareerStatsBatting.sql" />
       <None Remove="Resources\Sql\PlayoffCareerStatsBatting.sql" />
+      <EmbeddedResource Include="Resources\Sql\GetRosterForTeamSmbEi.sql" />
+      <EmbeddedResource Include="Resources\Sql\GetTeamsForSmbEi.sql" />
       <EmbeddedResource Include="Resources\Sql\PlayoffCareerStatsBatting.sql" />
       <None Remove="Resources\Sql\PlayoffStatsBatting.sql" />
       <EmbeddedResource Include="Resources\Sql\PlayoffStatsBatting.sql" />
@@ -109,6 +113,10 @@
       <EmbeddedResource Include="Resources\Sql\PlayoffsAveragePitcherStats.sql" />
       <None Remove="Resources\Sql\MostRecentSeasonPlayoffSchedule.sql" />
       <EmbeddedResource Include="Resources\Sql\MostRecentSeasonPlayoffSchedule.sql" />
+      <None Remove="Resources\Sql\GetTeamConfigurationsForTeamSmbEi.sql" />
+      <EmbeddedResource Include="Resources\Sql\GetTeamConfigurationsForTeamSmbEi.sql" />
+      <None Remove="Resources\Sql\UpdatePlayerInRosterSmbEi.sql" />
+      <EmbeddedResource Include="Resources\Sql\UpdatePlayerInRosterSmbEi.sql" />
     </ItemGroup>
 
 </Project>

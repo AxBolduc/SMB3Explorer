@@ -17,6 +17,10 @@
         <DataTemplate DataType="{x:Type viewModels:HomeViewModel}">
             <views:HomeView/>
         </DataTemplate>
-        
+
+        <DataTemplate DataType="{x:Type viewModels:RosterViewModel}">
+            <views:RosterView/>
+        </DataTemplate>
+
     </Application.Resources>
 </Application>
