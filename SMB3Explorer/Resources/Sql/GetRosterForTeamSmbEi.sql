@@ -10,7 +10,10 @@
     bp.mojo as mojoRating,
     bp.speed as speedRating,
     bp.arm as armRating,
-    bp.fielding as fieldingRating
+    bp.fielding as fieldingRating,
+    bp.velocity as velocityRating,
+    bp.junk as junkRating,
+    bp.accuracy as accuracyRating
 from baseball_players bp
 join main.teams t on bp.teamID = t.ID
 join main.team_configuration_character_attribute_joins tccaj on bp.ID = tccaj.baseballPlayerID

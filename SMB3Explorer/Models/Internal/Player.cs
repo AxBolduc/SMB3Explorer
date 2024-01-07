@@ -13,9 +13,14 @@ public record Player
     public float SpeedRating { get; set; }
     public float ArmRating { get; set; }
     public float FieldingRating { get; set; }
+    public float VelocityRating { get; set; }
+    public float JunkRating { get; set; }
+    public float AccuracyRating { get; set; }
 
     public int GetId()
     {
         return id;
     }
+
+    public bool IsPitcher => PrimaryPosition.Equals("P");
 }

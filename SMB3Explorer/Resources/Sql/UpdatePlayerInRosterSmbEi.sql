@@ -7,7 +7,10 @@ set
     mojo = @Mojo,
     speed = @Speed,
     arm = @Arm,
-    fielding = @Fielding
+    fielding = @Fielding,
+    accuracy = @Accuracy,
+    junk = @Junk,
+    velocity = @Velocity
 where id = @PlayerId
 and teamID = @TeamId;
 

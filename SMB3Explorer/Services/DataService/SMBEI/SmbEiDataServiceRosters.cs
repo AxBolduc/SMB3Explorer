@@ -102,6 +102,9 @@ public partial class SmbEiDataService
                 SpeedRating = float.Parse(reader["speedRating"].ToString()!),
                 ArmRating = float.Parse(reader["armRating"].ToString()!),
                 FieldingRating = float.Parse(reader["fieldingRating"].ToString()!),
+                VelocityRating = float.Parse(reader["velocityRating"].ToString()!),
+                JunkRating = float.Parse(reader["junkRating"].ToString()!),
+                AccuracyRating = float.Parse(reader["accuracyRating"].ToString()!),
             };
 
             roster.Players.Add(player);
@@ -142,6 +145,11 @@ public partial class SmbEiDataService
         var armParam = new SqliteParameter("@Arm", SqliteType.Real) { Value = player.ArmRating };
         var fieldingParam = new SqliteParameter("@Fielding", SqliteType.Real) { Value = player.FieldingRating };
         var mojoParam = new SqliteParameter("@Mojo", SqliteType.Real) { Value = player.MojoRating };
+        var accuracyParam = new SqliteParameter("@Accuracy", SqliteType.Real) { Value = player.AccuracyRating };
+        var junkParam = new SqliteParameter("@Junk", SqliteType.Real) { Value = player.JunkRating };
+        var velocityParam = new SqliteParameter("@Velocity", SqliteType.Real) { Value = player.VelocityRating };
+
+
         var firstNameParam = new SqliteParameter("@FirstName", SqliteType.Text) { Value = player.FirstName };
         var lastNameParam = new SqliteParameter("@LastName", SqliteType.Text) { Value = player.LastName };
 
@@ -154,13 +162,17 @@ public partial class SmbEiDataService
         command.Parameters.Add(armParam);
         command.Parameters.Add(fieldingParam);
         command.Parameters.Add(mojoParam);
+        command.Parameters.Add(accuracyParam);
+        command.Parameters.Add(junkParam);
+        command.Parameters.Add(velocityParam);
+
+
         command.Parameters.Add(firstNameParam);
         command.Parameters.Add(lastNameParam);
 
         try
         {
             await command.ExecuteReaderAsync();
-            Log.Debug("Saved");
             return new Success();
         }
         catch (SqliteException err)

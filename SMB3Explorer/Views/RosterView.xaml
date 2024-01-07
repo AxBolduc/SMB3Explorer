@@ -65,27 +65,70 @@
             Grid.Row="0"
             Grid.Column="1"
             Margin="10"
-            HorizontalAlignment="Left"
-            >
+            HorizontalAlignment="Left">
             <Grid.RowDefinitions>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="*" MaxHeight="10" MinHeight="2"/>
-                <RowDefinition Height="2*" MinHeight="50" MaxHeight="50"/>
+                <RowDefinition Height="9*" />
+                <RowDefinition Height="*" MaxHeight="10" MinHeight="2" />
+                <RowDefinition Height="2*" MinHeight="50" MaxHeight="50" />
             </Grid.RowDefinitions>
 
-            <DataGrid
-                Grid.Row="0"
-                Name="RosterGrid"
-                ItemsSource="{Binding CurrentRoster.Players}"
-                AutoGenerateColumns="True"
-                RowHeight="25"
-                CanUserAddRows="False"
-                CanUserReorderColumns="False"
-                CanUserDeleteRows="False"
-                HeadersVisibility="Column"
-                Background="Transparent"
-                RowEditEnding="RosterGrid_OnRowEditEnding"/>
-            <Button Grid.Row="2" Width="Auto" Padding="5" Content="Save to Save File" Command="{Binding SaveRosterCommand}"/>
+            <TabControl Grid.Row="0">
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock> Batters </TextBlock>
+                    </TabItem.Header>
+                    <DataGrid
+                        Name="BattingRosterGrid"
+                        ItemsSource="{Binding CurrentRoster.Players}"
+                        AutoGenerateColumns="False"
+                        RowHeight="25"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserDeleteRows="False"
+                        HeadersVisibility="Column"
+                        Background="Transparent"
+                        RowEditEnding="RosterGrid_OnRowEditEnding">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
+                            <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
+                            <DataGridTextColumn Header="Contact" Binding="{Binding ContactRating}" />
+                            <DataGridTextColumn Header="Power" Binding="{Binding PowerRating}" />
+                            <DataGridTextColumn Header="Speed" Binding="{Binding SpeedRating}" />
+                            <DataGridTextColumn Header="Mojo" Binding="{Binding MojoRating}" />
+                            <DataGridTextColumn Header="Arm" Binding="{Binding ArmRating}" />
+                            <DataGridTextColumn Header="Fielding" Binding="{Binding FieldingRating}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock> Pitchers </TextBlock>
+                    </TabItem.Header>
+                    <DataGrid
+                        Name="PitchingRosterGrid"
+                        ItemsSource="{Binding CurrentRosterPitchers}"
+                        AutoGenerateColumns="False"
+                        RowHeight="25"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserDeleteRows="False"
+                        HeadersVisibility="Column"
+                        Background="Transparent"
+                        RowEditEnding="RosterGrid_OnRowEditEnding">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
+                            <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
+                            <DataGridTextColumn Header="Velocity" Binding="{Binding VelocityRating}" />
+                            <DataGridTextColumn Header="Junk" Binding="{Binding JunkRating}" />
+                            <DataGridTextColumn Header="Accuracy" Binding="{Binding AccuracyRating}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+
+            </TabControl>
+
+            <Button Grid.Row="2" Width="Auto" Padding="5" Content="Save to Save File"
+                    Command="{Binding SaveRosterCommand}" />
         </Grid>
     </Grid>
 </UserControl>

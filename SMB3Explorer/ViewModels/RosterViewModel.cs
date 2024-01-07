@@ -107,7 +107,14 @@ public partial class RosterViewModel : ViewModelBase
 
 
             OnPropertyChanged(nameof(RosterSelected));
+            OnPropertyChanged(nameof(CurrentRosterPitchers));
         }
+    }
+
+    public List<Player>? CurrentRosterPitchers
+    {
+        get => _roster!.Players.FindAll(player => player.PrimaryPosition.Equals("P"));
+        set => _roster!.UpdatePitchers(value);
     }
 
     public ObservableCollection<TeamSelection> Teams
@@ -240,6 +247,8 @@ public partial class RosterViewModel : ViewModelBase
                         new Exception(error.Value));
                     return;
                 }
+
+                Log.Debug("Saved Roster Successfully");
             });
     }
 }
