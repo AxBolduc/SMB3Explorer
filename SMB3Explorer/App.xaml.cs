@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using SMB3Explorer.ApplicationConfig;
+using SMB3Explorer.Enums;
 using SMB3Explorer.Services.ApplicationContext;
 using SMB3Explorer.Services.CsvWriterWrapper;
 using SMB3Explorer.Services.DataService;
+using SMB3Explorer.Services.DataService.RosterDataService;
+using SMB3Explorer.Services.DataService.RosterDataService.SMB2;
 using SMB3Explorer.Services.DataService.SMBEI;
 using SMB3Explorer.Services.HttpService;
 using SMB3Explorer.Services.NavigationService;
@@ -15,6 +19,7 @@ using SMB3Explorer.Services.SystemIoWrapper;
 using SMB3Explorer.Utils;
 using SMB3Explorer.ViewModels;
 using SMB3Explorer.Views;
+using SmbEiDataService = SMB3Explorer.Services.DataService.RosterDataService.SMBEI.SmbEiDataService;
 
 namespace SMB3Explorer;
 
@@ -53,7 +58,6 @@ public partial class App
         services.AddSingleton<IApplicationContext, ApplicationContext>();
         services.AddSingleton<ISystemIoWrapper, SystemIoWrapper>();
         services.AddSingleton<IApplicationConfig, ApplicationConfig.ApplicationConfig>();
-        services.AddSingleton<ISmbEiDataService, SmbEiDataService>();
 
         services.AddSingleton<MainWindow>(serviceProvider => new MainWindow
         {
@@ -66,7 +70,12 @@ public partial class App
         services.AddTransient<RosterViewModel>();
         services.AddTransient<ICsvWriterWrapper, CsvWriterWrapper>();
 
-        // NavigationService calls this Func to get the ViewModel instance
+        services.AddTransient<IRosterDataService, SmbEiDataService>();
+        services.AddTransient<IRosterDataService, Smb2RosterDataService>();
+        services.AddSingleton<Func<IEnumerable<IRosterDataService>>>(x => () => x.GetService<IEnumerable<IRosterDataService>>()!);
+        services.AddSingleton<IRosterDataServiceFactory, RosterDataServiceFactory>();
+
+                // NavigationService calls this Func to get the ViewModel instance
         services.AddSingleton<Func<Type, ViewModelBase>>(serviceProvider =>
             viewModelType => (ViewModelBase) serviceProvider.GetRequiredService(viewModelType));
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.ComponentModel;
+using Microsoft.Data.Sqlite;
 using SMB3Explorer.Enums;
 using SMB3Explorer.Models.Internal;
 
@@ -18,4 +19,6 @@ public interface IApplicationContext
     bool FranchiseSeasonsLoading { get; set; }
     SelectedGame SelectedGame { get; set; }
     event PropertyChangedEventHandler? PropertyChanged;
+    SqliteConnection? Connection { get; set; }
+    bool IsConnected { get; }
 }

@@ -15,13 +15,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
+using CsvHelper;
+using SMB3Explorer.Services.DataService.RosterDataService;
 
 namespace SMB3Explorer.ViewModels;
 
 public partial class RosterViewModel : ViewModelBase
 {
     private readonly IApplicationContext _applicationContext;
-    private readonly ISmbEiDataService _dataService;
+    private readonly IRosterDataService _dataService;
     private readonly INavigationService _navigationService;
     private readonly ISystemIoWrapper _systemIoWrapper;
 
@@ -32,12 +34,12 @@ public partial class RosterViewModel : ViewModelBase
     private TeamConfigurationSelection? _selectedTeamConfiguration;
     private Roster? _roster = new();
 
-    public RosterViewModel(INavigationService navigationService, ISmbEiDataService dataService,
+    public RosterViewModel(INavigationService navigationService, IRosterDataServiceFactory dataServiceFactory,
         IApplicationContext applicationContext, ISystemIoWrapper systemIoWrapper)
     {
         _navigationService = navigationService;
-        _dataService = dataService;
         _applicationContext = applicationContext;
+        _dataService = dataServiceFactory.create(_applicationContext.SelectedGame);
         _systemIoWrapper = systemIoWrapper;
 
         Log.Information("Initializing RosterViewModel");
@@ -49,18 +51,6 @@ public partial class RosterViewModel : ViewModelBase
 
     private void ApplicationContextOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        switch (e.PropertyName)
-        {
-            case nameof(ApplicationContext.MostRecentFranchiseSeason):
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    //ExportMostRecentSeasonPlayoffScheduleCommand.NotifyCanExecuteChanged();
-                });
-
-                break;
-            }
-        }
     }
 
     public TeamSelection? SelectedTeam

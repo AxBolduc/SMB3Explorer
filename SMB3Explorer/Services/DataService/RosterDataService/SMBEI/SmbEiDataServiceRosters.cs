@@ -1,23 +1,27 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using OneOf;
 using OneOf.Types;
+using Serilog;
 using SMB3Explorer.Models.Internal;
 using SMB3Explorer.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualBasic;
-using Serilog;
 
-namespace SMB3Explorer.Services.DataService.SMBEI;
+namespace SMB3Explorer.Services.DataService.RosterDataService.SMBEI;
 
 public partial class SmbEiDataService
 {
     public async Task<List<TeamSelection>> GetTeams()
     {
-        var command = Connection!.CreateCommand();
+        if (!_applicationContext.IsConnected)
+        {
+            var errMsg = "Could not get teams, database not connected";
+            Log.Debug(errMsg);
+            throw new Exception(errMsg);
+        }
+
+        var command = _applicationContext.Connection!.CreateCommand();
         var commandText = SqlRunner.GetSqlCommand(SqlFile.GetTeamsForSmbEi);
         command.CommandText = commandText;
         var reader = await command.ExecuteReaderAsync();
@@ -38,7 +42,14 @@ public partial class SmbEiDataService
 
     public async Task<List<TeamConfigurationSelection>> GetTeamConfigurations(int teamId)
     {
-        var command = Connection!.CreateCommand();
+        if (!_applicationContext.IsConnected)
+        {
+            var errMsg = "Could not get team configurations, database not connected";
+            Log.Debug(errMsg);
+            throw new Exception(errMsg);
+        }
+
+        var command = _applicationContext.Connection!.CreateCommand();
         var commandText = SqlRunner.GetSqlCommand(SqlFile.GetTeamConfigurationsForTeamSmbEi);
         command.CommandText = commandText;
 
@@ -65,7 +76,14 @@ public partial class SmbEiDataService
 
     public async Task<Roster> GetRosterForTeam(int teamId, int teamConfigurationId)
     {
-        var command = Connection!.CreateCommand();
+        if (!_applicationContext.IsConnected)
+        {
+            var errMsg = "Could not get roster for team/configuration, database not connected";
+            Log.Debug(errMsg);
+            throw new Exception(errMsg);
+        }
+
+        var command = _applicationContext.Connection!.CreateCommand();
         var commandText = SqlRunner.GetSqlCommand(SqlFile.GetRosterForTeamSmbEi);
         command.CommandText = commandText;
 
@@ -131,7 +149,14 @@ public partial class SmbEiDataService
     private async Task<OneOf<Success, Error<string>>> SavePlayerInRoster(int teamId, int teamConfigurationId,
         Player player)
     {
-        var command = Connection!.CreateCommand();
+        if (!_applicationContext.IsConnected)
+        {
+            var errMsg = "Could not save player in roster, database not connected";
+            Log.Debug(errMsg);
+            throw new Exception(errMsg);
+        }
+
+        var command = _applicationContext.Connection!.CreateCommand();
         var commandText = SqlRunner.GetSqlCommand(SqlFile.UpdatePlayerInRosterSmbEi);
         command.CommandText = commandText;
 

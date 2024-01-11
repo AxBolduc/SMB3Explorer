@@ -15,6 +15,7 @@ using SMB3Explorer.Enums;
 using SMB3Explorer.Models.Internal;
 using SMB3Explorer.Services.ApplicationContext;
 using SMB3Explorer.Services.DataService;
+using SMB3Explorer.Services.DataService.RosterDataService;
 using SMB3Explorer.Services.DataService.SMBEI;
 using SMB3Explorer.Services.NavigationService;
 using SMB3Explorer.Services.SystemIoWrapper;
@@ -28,21 +29,21 @@ public partial class LandingViewModel : ViewModelBase
     private readonly IApplicationConfig _applicationConfig;
     private readonly IApplicationContext _applicationContext;
     private readonly IDataService _dataService;
-    private readonly ISmbEiDataService _smbEiDataService;
+    private readonly IRosterDataServiceFactory _rosterDataServiceFactory;
     private readonly INavigationService _navigationService;
     private readonly ISystemIoWrapper _systemIoWrapper;
     private Smb4LeagueSelection? _selectedExistingLeague;
     private SelectedGame _selectedGame;
 
     public LandingViewModel(IDataService dataService, INavigationService navigationService,
-        ISystemIoWrapper systemIoWrapper, IApplicationContext applicationContext, IApplicationConfig applicationConfig, ISmbEiDataService smbEiDataService)
+        ISystemIoWrapper systemIoWrapper, IApplicationContext applicationContext, IApplicationConfig applicationConfig, IRosterDataServiceFactory rosterDataServiceFactory)
     {
         _navigationService = navigationService;
         _systemIoWrapper = systemIoWrapper;
         _applicationContext = applicationContext;
         _applicationConfig = applicationConfig;
         _dataService = dataService;
-        _smbEiDataService = smbEiDataService;
+        _rosterDataServiceFactory = rosterDataServiceFactory;
 
         Log.Information("Initializing LandingViewModel");
 
@@ -264,8 +265,8 @@ public partial class LandingViewModel : ViewModelBase
 
         var connectionResult =  _applicationContext.SelectedGame switch
         {
-            SelectedGame.SmbEI => await _smbEiDataService.EstablishDbConnection(filePath),
-            SelectedGame.Smb2 => await _dataService.EstablishDbConnection(filePath, isCompressedSaveGame),
+            SelectedGame.SmbEI => await _rosterDataServiceFactory.create(_applicationContext.SelectedGame).EstablishDbConnection(filePath),
+            SelectedGame.Smb2 => await _rosterDataServiceFactory.create(_applicationContext.SelectedGame).EstablishDbConnection(filePath),
             SelectedGame.Smb3 => await _dataService.EstablishDbConnection(filePath, isCompressedSaveGame),
             SelectedGame.Smb4 => await _dataService.EstablishDbConnection(filePath, isCompressedSaveGame),
             _ => throw new ArgumentOutOfRangeException(nameof(_applicationContext.SelectedGame),

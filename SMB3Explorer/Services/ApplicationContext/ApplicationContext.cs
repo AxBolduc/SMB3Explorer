@@ -1,7 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.Data.Sqlite;
+using Serilog;
 using SMB3Explorer.Enums;
 using SMB3Explorer.Models.Internal;
 
@@ -15,6 +18,7 @@ public sealed class ApplicationContext : IApplicationContext, INotifyPropertyCha
     private Roster? _currentRoster;
     private bool _franchiseSeasonsLoading;
     private FranchiseSeason? _mostRecentFranchiseSeason;
+    private SqliteConnection? _connection;
 
     public FranchiseSelection? SelectedFranchise
     {
@@ -55,6 +59,20 @@ public sealed class ApplicationContext : IApplicationContext, INotifyPropertyCha
             OnPropertyChanged(nameof(IsRosterSelected));
         }
     }
+
+    public SqliteConnection? Connection
+    {
+        get => _connection;
+        set
+        {
+            SetField(ref _connection, value);
+
+            var isConnectionNull = value is null;
+            Log.Debug("Connection changed, is null: {IsConnectionNull}", isConnectionNull);
+        }
+    }
+
+    public bool IsConnected => Connection is not null;
 
     public bool IsFranchiseSelected => SelectedFranchise is not null;
     public bool IsTeamSelected => SelectedTeam is not null;

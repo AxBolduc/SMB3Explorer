@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using OneOf;
 using OneOf.Types;
 using Serilog;
-using SMB3Explorer.Enums;
 using SMB3Explorer.Models.Internal;
-using SMB3Explorer.Services.SystemIoWrapper;
 using SMB3Explorer.Utils;
 
-namespace SMB3Explorer.Services.DataService.SMBEI;
+namespace SMB3Explorer.Services.DataService.RosterDataService.SMBEI;
 
 public partial class SmbEiDataService
 {
@@ -29,11 +25,11 @@ public partial class SmbEiDataService
 
         Log.Debug("Opening connection to database at {FilePath}", CurrentFilePath);
 
-        Connection = new SqliteConnection(connectionStringBuilder.ToString());
-        Connection.Open();
+        _applicationContext.Connection = new SqliteConnection(connectionStringBuilder.ToString());
+        _applicationContext.Connection.Open();
 
         Log.Debug("Testing connection to database");
-        var command = Connection.CreateCommand();
+        var command = _applicationContext.Connection.CreateCommand();
         var commandText = SqlRunner.GetSqlCommand(SqlFile.DatabaseTables);
         command.CommandText = commandText;
         var reader = await command.ExecuteReaderAsync();
@@ -58,12 +54,12 @@ public partial class SmbEiDataService
     public async Task Disconnect()
     {
         Log.Information("Disconnecting from database");
-        if (Connection is not null)
+        if (_applicationContext.Connection is not null)
         {
             try
             {
                 Log.Debug("Committing all transactions");
-                var command = Connection.CreateCommand();
+                var command = _applicationContext.Connection.CreateCommand();
                 command.CommandText = "COMMIT";
                 await command.ExecuteNonQueryAsync();
             }
@@ -76,8 +72,8 @@ public partial class SmbEiDataService
             {
                 Log.Debug("Closing and disposing of connection");
                 // Remove reference to connection object
-                var conn = Connection;
-                Connection = null;
+                var conn = _applicationContext.Connection;
+                _applicationContext.Connection = null;
 
                 // Close and dispose of the connection object
                 conn.Close();
