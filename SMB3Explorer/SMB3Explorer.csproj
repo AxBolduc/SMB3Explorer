@@ -54,8 +54,6 @@
       <None Remove="Resources\Sql\GetTeamsForSmbEi.sql" />
       <EmbeddedResource Include="Resources\Sql\CareerStatsBatting.sql" />
       <None Remove="Resources\Sql\PlayoffCareerStatsBatting.sql" />
-      <EmbeddedResource Include="Resources\Sql\GetRosterForTeamSmbEi.sql" />
-      <EmbeddedResource Include="Resources\Sql\GetTeamsForSmbEi.sql" />
       <EmbeddedResource Include="Resources\Sql\PlayoffCareerStatsBatting.sql" />
       <None Remove="Resources\Sql\PlayoffStatsBatting.sql" />
       <EmbeddedResource Include="Resources\Sql\PlayoffStatsBatting.sql" />
@@ -78,6 +76,10 @@
       <None Remove="Resources\Sql\FranchiseSeasonStandings.sql" />
       <EmbeddedResource Include="Resources\Sql\FranchiseSeasonStandings.sql" />
       <None Remove="Resources\Sql\TopPerformersBatting.sql" />
+      <EmbeddedResource Include="Resources\Sql\SMBEI\GetRosterForTeamSmbEi.sql" />
+      <EmbeddedResource Include="Resources\Sql\SMBEI\GetTeamConfigurationsForTeamSmbEi.sql" />
+      <EmbeddedResource Include="Resources\Sql\SMBEI\GetTeamsForSmbEi.sql" />
+      <EmbeddedResource Include="Resources\Sql\SMBEI\UpdatePlayerInRosterSmbEi.sql" />
       <EmbeddedResource Include="Resources\Sql\TopPerformersBatting.sql" />
       <None Remove="Resources\Sql\TopPerformersPitching.sql" />
       <EmbeddedResource Include="Resources\Sql\TopPerformersPitching.sql" />
@@ -114,9 +116,11 @@
       <None Remove="Resources\Sql\MostRecentSeasonPlayoffSchedule.sql" />
       <EmbeddedResource Include="Resources\Sql\MostRecentSeasonPlayoffSchedule.sql" />
       <None Remove="Resources\Sql\GetTeamConfigurationsForTeamSmbEi.sql" />
-      <EmbeddedResource Include="Resources\Sql\GetTeamConfigurationsForTeamSmbEi.sql" />
       <None Remove="Resources\Sql\UpdatePlayerInRosterSmbEi.sql" />
-      <EmbeddedResource Include="Resources\Sql\UpdatePlayerInRosterSmbEi.sql" />
+      <None Remove="Resources\Sql\SMB2\GetRosterForTeam.sql" />
+      <EmbeddedResource Include="Resources\Sql\SMB2\GetRosterForTeam.sql" />
+      <None Remove="Resources\Sql\SMB2\GetTeams.sql" />
+      <EmbeddedResource Include="Resources\Sql\SMB2\GetTeams.sql" />
     </ItemGroup>
 
 </Project>

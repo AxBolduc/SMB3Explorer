@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OneOf;
 using OneOf.Types;
@@ -17,9 +18,9 @@ public interface IRosterDataService
 
     Task<List<TeamSelection>> GetTeams();
 
-    Task<Roster> GetRosterForTeam(int teamId, int teamConfigurationId);
+    Task<Roster> GetRosterForTeam(OneOf<int, Guid> teamId, int? teamConfigurationId);
 
     Task<List<TeamConfigurationSelection>> GetTeamConfigurations(int teamId);
 
-    Task<OneOf<Success, Error<string>>> SaveRosterForTeam(int teamId, int configurationId, Roster roster);
+    Task<OneOf<Success, Error<string>>> SaveRosterForTeam(OneOf<int, Guid> teamId, int? configurationId, Roster roster);
 }

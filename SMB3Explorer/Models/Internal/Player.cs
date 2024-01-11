@@ -2,7 +2,7 @@
 
 public record Player
 {
-    internal int id { get; set; }
+    internal string id { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string PrimaryPosition { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ public record Player
     public float JunkRating { get; set; }
     public float AccuracyRating { get; set; }
 
-    public int GetId()
+    public string GetId()
     {
         return id;
     }

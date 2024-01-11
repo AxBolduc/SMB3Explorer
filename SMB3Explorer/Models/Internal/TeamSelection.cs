@@ -8,7 +8,7 @@ namespace SMB3Explorer.Models.Internal;
 
 public record TeamSelection
 {
-    public int id { get; set; }
+    public string id { get; set; } = string.Empty;
     public string teamName { get; set; } = string.Empty;
 
     public string DisplayText => $"{teamName}";

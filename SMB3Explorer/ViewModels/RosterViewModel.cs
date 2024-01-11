@@ -11,12 +11,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
-using CsvHelper;
+using OneOf;
+using SMB3Explorer.Enums;
 using SMB3Explorer.Services.DataService.RosterDataService;
+using SMB3Explorer.Services.DataService.RosterDataService.SMB2;
 
 namespace SMB3Explorer.ViewModels;
 
@@ -64,7 +64,12 @@ public partial class RosterViewModel : ViewModelBase
             if (value != null)
             {
                 GetTeamConfigurationsForTeam(value.id);
+                if (!_applicationContext.SelectedGame.Equals(SelectedGame.SmbEI))
+                {
+                    GetRosterForTeamConfiguration(value.id, null);
+                }
             }
+
 
             OnPropertyChanged(nameof(TeamSelected));
         }
@@ -130,6 +135,11 @@ public partial class RosterViewModel : ViewModelBase
         set => SetField(ref _interactionEnabled, value);
     }
 
+    [RelayCommand(CanExecute = nameof(RosterSelected))]
+    public void SaveRoster()
+    {
+        HandleSaveRoster();
+    }
 
     private void GetTeams()
     {
@@ -159,10 +169,12 @@ public partial class RosterViewModel : ViewModelBase
             });
     }
 
-    private void GetTeamConfigurationsForTeam(int teamId)
+    private void GetTeamConfigurationsForTeam(string teamId)
     {
-        _dataService.GetTeamConfigurations(teamId)
-            .ContinueWith(async task =>
+        var testId = _applicationContext.SelectedGame.Equals(SelectedGame.SmbEI) ? int.Parse(teamId) : 0;
+
+        _dataService.GetTeamConfigurations(testId)
+            .ContinueWith( task =>
             {
                 if (task.Exception != null)
                 {
@@ -179,17 +191,24 @@ public partial class RosterViewModel : ViewModelBase
                 }
                 else
                 {
-                    Log.Debug("No teams found, navigating to landing page");
-                    MessageBox.Show("No teams found. Please select a different save file.");
-                    await _dataService.Disconnect();
-                    _navigationService.NavigateTo<LandingViewModel>();
+                    Log.Debug("No team configurations found, navigating to landing page");
+                    // MessageBox.Show("No team configurations found. Please select a different save file.");
+                    // await _dataService.Disconnect();
+                    // _navigationService.NavigateTo<LandingViewModel>();
                 }
             });
     }
 
-    private void GetRosterForTeamConfiguration(int teamId, int teamConfigurationId)
+    private void GetRosterForTeamConfiguration(string teamId, int? teamConfigurationId)
     {
-        _dataService.GetRosterForTeam(teamId, teamConfigurationId)
+        OneOf<int, Guid> parsedTeamId = _applicationContext.SelectedGame switch
+        {
+            SelectedGame.SmbEI => int.Parse(teamId),
+            SelectedGame.Smb2 => Guid.Parse(teamId),
+            _ => throw new NotImplementedException()
+        };
+
+        _dataService.GetRosterForTeam(parsedTeamId, teamConfigurationId)
             .ContinueWith(task =>
             {
                 if (task.Exception != null)
@@ -204,11 +223,6 @@ public partial class RosterViewModel : ViewModelBase
             });
     }
 
-    [RelayCommand(CanExecute = nameof(RosterSelected))]
-    public void SaveRoster()
-    {
-        HandleSaveRoster();
-    }
 
     private void HandleSaveRoster()
     {
@@ -220,7 +234,14 @@ public partial class RosterViewModel : ViewModelBase
             return;
         }
 
-        _dataService.SaveRosterForTeam(SelectedTeam.id, SelectedTeamConfiguration.id, CurrentRoster)
+        OneOf<int, Guid> parsedTeamId = _applicationContext.SelectedGame switch
+        {
+            SelectedGame.SmbEI => int.Parse(SelectedTeam.id),
+            SelectedGame.Smb2 => Guid.Parse(SelectedTeam.id),
+            _ => throw new NotImplementedException()
+        };
+
+        _dataService.SaveRosterForTeam(parsedTeamId, SelectedTeamConfiguration.id, CurrentRoster)
             .ContinueWith(task =>
             {
                 if (task.Exception != null)

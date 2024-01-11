@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using OneOf;
 
 namespace SMB3Explorer.Utils;
 
@@ -12,14 +13,11 @@ namespace SMB3Explorer.Utils;
 /// </summary>
 public enum SqlFile
 {
-    [Description("DatabaseTables.sql")]
-    DatabaseTables,
+    [Description("DatabaseTables.sql")] DatabaseTables,
 
-    [Description("Franchises.sql")]
-    Franchises,
+    [Description("Franchises.sql")] Franchises,
 
-    [Description("FranchiseSeasons.sql")]
-    FranchiseSeasons,
+    [Description("FranchiseSeasons.sql")] FranchiseSeasons,
 
     [Description("CareerStatsBatting.sql")]
     CareerStatsBatting,
@@ -98,18 +96,30 @@ public enum SqlFile
 
     [Description("GetLeaguesForSmb4SaveGame.sql")]
     GetLeaguesForSmb4SaveGame,
+}
 
-    [Description("GetRosterForTeamSmbEi.sql")]
+public enum SmbEiSqlFile
+{
+    [Description("SMBEI.GetRosterForTeamSmbEi.sql")]
     GetRosterForTeamSmbEi,
 
-    [Description("GetTeamsForSmbEi.sql")]
+    [Description("SMBEI.GetTeamsForSmbEi.sql")]
     GetTeamsForSmbEi,
 
-    [Description("GetTeamConfigurationsForTeamSmbEi.sql")]
+    [Description("SMBEI.GetTeamConfigurationsForTeamSmbEi.sql")]
     GetTeamConfigurationsForTeamSmbEi,
 
-    [Description("UpdatePlayerInRosterSmbEi.sql")]
+    [Description("SMBEI.UpdatePlayerInRosterSmbEi.sql")]
     UpdatePlayerInRosterSmbEi
+}
+
+public enum Smb2SqlFile
+{
+    [Description("SMB2.GetTeams.sql")]
+    GetTeams,
+
+    [Description("SMB2.GetRosterForTeam.sql")]
+    GetRosterForTeam
 }
 
 public static class SqlRunner
@@ -120,10 +130,13 @@ public static class SqlRunner
     /// <param name="file">A SQL file in the embedded resources mapped by the <see cref="SqlFile"/> enum</param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static string GetSqlCommand(SqlFile file)
+    public static string GetSqlCommand(OneOf<SmbEiSqlFile, Smb2SqlFile, SqlFile> file)
     {
+        string fileName = file.Match(smbEi => smbEi.GetEnumDescription(), smb2 => smb2.GetEnumDescription(),
+            smb3 => smb3.GetEnumDescription());
+
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"SMB3Explorer.Resources.Sql.{file.GetEnumDescription()}";
+        var resourceName = $"SMB3Explorer.Resources.Sql.{fileName}";
 
         using var stream = assembly.GetManifestResourceStream(resourceName);
         using var reader = new StreamReader(stream ?? throw new InvalidOperationException("Invalid resource name"));

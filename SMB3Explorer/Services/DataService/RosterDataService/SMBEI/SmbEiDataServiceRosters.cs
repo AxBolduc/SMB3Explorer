@@ -22,7 +22,7 @@ public partial class SmbEiDataService
         }
 
         var command = _applicationContext.Connection!.CreateCommand();
-        var commandText = SqlRunner.GetSqlCommand(SqlFile.GetTeamsForSmbEi);
+        var commandText = SqlRunner.GetSqlCommand(SmbEiSqlFile.GetTeamsForSmbEi);
         command.CommandText = commandText;
         var reader = await command.ExecuteReaderAsync();
 
@@ -31,7 +31,7 @@ public partial class SmbEiDataService
         {
             var teamSelection = new TeamSelection()
             {
-                id = int.Parse(reader["id"].ToString()!),
+                id = reader["id"].ToString()!,
                 teamName = reader["teamName"].ToString()!
             };
             teams.Add(teamSelection);
@@ -50,7 +50,7 @@ public partial class SmbEiDataService
         }
 
         var command = _applicationContext.Connection!.CreateCommand();
-        var commandText = SqlRunner.GetSqlCommand(SqlFile.GetTeamConfigurationsForTeamSmbEi);
+        var commandText = SqlRunner.GetSqlCommand(SmbEiSqlFile.GetTeamConfigurationsForTeamSmbEi);
         command.CommandText = commandText;
 
         command.Parameters.Add(new SqliteParameter("@TeamId", SqliteType.Integer)
@@ -74,8 +74,15 @@ public partial class SmbEiDataService
         return teamConfigurations;
     }
 
-    public async Task<Roster> GetRosterForTeam(int teamId, int teamConfigurationId)
+    public async Task<Roster> GetRosterForTeam(OneOf<int, Guid> teamId, int? teamConfigurationId)
     {
+        if (teamId.TryPickT1(out Guid teamGuid, out int parsedTeamId))
+        {
+            var errMsg = "Invalid team id type for SMB: EI got Guid expected int";
+            Log.Debug(errMsg);
+            throw new Exception(errMsg);
+        }
+
         if (!_applicationContext.IsConnected)
         {
             var errMsg = "Could not get roster for team/configuration, database not connected";
@@ -84,12 +91,12 @@ public partial class SmbEiDataService
         }
 
         var command = _applicationContext.Connection!.CreateCommand();
-        var commandText = SqlRunner.GetSqlCommand(SqlFile.GetRosterForTeamSmbEi);
+        var commandText = SqlRunner.GetSqlCommand(SmbEiSqlFile.GetRosterForTeamSmbEi);
         command.CommandText = commandText;
 
         command.Parameters.Add(new SqliteParameter("@TeamId", SqliteType.Integer)
         {
-            Value = teamId
+            Value = parsedTeamId
         });
 
         command.Parameters.Add(new SqliteParameter("@TeamConfigurationId", SqliteType.Integer)
@@ -109,7 +116,7 @@ public partial class SmbEiDataService
 
             var player = new Player()
             {
-                id = int.Parse(reader["playerId"].ToString()!),
+                id = reader["playerId"].ToString()!,
                 FirstName = reader["firstName"].ToString()!,
                 LastName = reader["lastName"].ToString()!,
                 PrimaryPosition = reader["primaryPosition"].ToString()!,
@@ -131,12 +138,27 @@ public partial class SmbEiDataService
         return roster;
     }
 
-    public async Task<OneOf<Success, Error<string>>> SaveRosterForTeam(int teamId, int teamConfigurationId,
+    public async Task<OneOf<Success, Error<string>>> SaveRosterForTeam(OneOf<int, Guid> teamId,
+        int? teamConfigurationId,
         Roster roster)
     {
+        if (teamId.TryPickT1(out Guid teamGuid, out int parsedTeamId))
+        {
+            var errMsg = "Invalid team id type for SMB: EI got Guid expected int";
+            Log.Debug(errMsg);
+            throw new Exception(errMsg);
+        }
+
+        if (teamConfigurationId == null)
+        {
+            var errMsg = "Team Configuration Id cannot be null when saving SMB: EI file";
+            Log.Debug(errMsg);
+            throw new Exception(errMsg);
+        }
+
         foreach (Player player in roster.Players)
         {
-            var playerSaveResult = await SavePlayerInRoster(teamId, teamConfigurationId, player);
+            var playerSaveResult = await SavePlayerInRoster(parsedTeamId, teamConfigurationId.Value, player);
             if (playerSaveResult.TryPickT1(out var error, out var success))
             {
                 return new Error<string>(error.Value);
@@ -157,7 +179,7 @@ public partial class SmbEiDataService
         }
 
         var command = _applicationContext.Connection!.CreateCommand();
-        var commandText = SqlRunner.GetSqlCommand(SqlFile.UpdatePlayerInRosterSmbEi);
+        var commandText = SqlRunner.GetSqlCommand(SmbEiSqlFile.UpdatePlayerInRosterSmbEi);
         command.CommandText = commandText;
 
         var teamIdParam = new SqliteParameter("@TeamId", SqliteType.Integer) { Value = teamId };

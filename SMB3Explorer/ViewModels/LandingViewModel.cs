@@ -205,7 +205,7 @@ public partial class LandingViewModel : ViewModelBase
         var directoryPath = _applicationContext.SelectedGame switch
         {
             SelectedGame.SmbEI => BaseGameSmbEIDirectoryPath,
-            SelectedGame.Smb2 => BaseGameSmb3DirectoryPath,
+            SelectedGame.Smb2 => BaseGameSmb2DirectoryPath,
             SelectedGame.Smb3 => BaseGameSmb3DirectoryPath,
             SelectedGame.Smb4 => BaseGameSmb4DirectoryPath,
             _ => throw new ArgumentOutOfRangeException(nameof(_applicationContext.SelectedGame),
@@ -249,7 +249,7 @@ public partial class LandingViewModel : ViewModelBase
     {
         if (connectionResult.TryPickT1(out _, out _)) return;
 
-        if(_applicationContext.SelectedGame.Equals(SelectedGame.SmbEI))
+        if(_applicationContext.SelectedGame.Equals(SelectedGame.SmbEI) || _applicationContext.SelectedGame.Equals(SelectedGame.Smb2))
         {
             _navigationService.NavigateTo<RosterViewModel>();
         }

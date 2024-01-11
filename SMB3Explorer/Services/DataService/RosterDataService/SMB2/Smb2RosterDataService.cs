@@ -95,15 +95,4 @@ public partial class Smb2RosterDataService : ISmb2RosterDataService
         OnPropertyChanged(propertyName);
     }
 
-    public Task<OneOf<List<Smb4LeagueSelection>, Error<string>>> EstablishDbConnection(string filePath)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task Disconnect()
-    {
-        throw new System.NotImplementedException();
-    }
-
-
 }

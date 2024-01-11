@@ -2,5 +2,4 @@
 
 public interface ISmb2RosterDataService : IRosterDataService
 {
-
 }
